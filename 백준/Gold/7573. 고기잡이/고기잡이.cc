@@ -39,7 +39,7 @@ int main() {
 			int ex = sx + r;
 			int ey = sy + c;
 			For(i, 0, 2 * N) {
-				if (ex - i <= 0) break;
+				if (ex - i < sx) break;
 				sx -= i;
 				ex -= i;
 				int cnt = 0;
