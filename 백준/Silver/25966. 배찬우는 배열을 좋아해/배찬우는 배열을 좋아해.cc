@@ -16,10 +16,13 @@ using ii = pair<int, int>;
 #define all(v) v.begin(), v.end()
 #define rall(v) v.rbegin(), v.rend()
 
-vector<vector<int>> board(3333, vector<int>(3333));
+int board[3333][3333];
+int row[3333];
 
 int main() {
 	cin.tie(0)->sync_with_stdio(0);
+
+	iota(row, row + 3333, 0);
 
 	int N, M, Q; cin >> N >> M >> Q;
 
@@ -31,17 +34,17 @@ int main() {
 		int op; cin >> op;
 		if (op == 0) {
 			int a, b, c; cin >> a >> b >> c;
-			board[a][b] = c;
+			board[row[a]][b] = c;
 		}
 		else {
 			int a, b; cin >> a >> b;
-			swap(board[a], board[b]);
+			swap(row[a], row[b]);
 		}
 	}
 
 	For(i, 0, N) {
 		For(j, 0, M) {
-			cout << board[i][j] << ' ';
+			cout << board[row[i]][j] << ' ';
 		}
 		cout << endl;
 	}
