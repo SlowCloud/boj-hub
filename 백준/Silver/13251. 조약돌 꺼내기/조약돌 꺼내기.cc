@@ -38,20 +38,15 @@ int main() {
 
 	long double res = 0;
 
-	M *= 1e9;
 	for (auto i : v) {
-		i *= 1e9;
 		long double tmp = 1;
 		for (ll k = 0; k < K; k++) {
-			ll kk = k * 1e9;
-			tmp *= (long double)(i - kk) / (total - k);
-			tmp /= 1e9;
+			tmp *= (long double)(i - k) / (total - k);
 		}
 		res += tmp;
 	}
 
 	cout << setprecision(9) << fixed;
-
 	cout << res;
 
 }
