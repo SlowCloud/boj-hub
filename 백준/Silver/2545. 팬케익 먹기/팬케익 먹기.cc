@@ -23,29 +23,48 @@ int main() {
 
 	int T; cin >> T;
 	while (T--) {
-		ll A, B, C; cin >> A >> B >> C;
+		vector<ll> v;
+		FOR(i, 0, 3) {
+			ll n; cin >> n;
+			v.push_back(n);
+		}
+		sort(rall(v));
 		ll D; cin >> D;
-		while (D--) {
-			ll ab = A * B;
-			ll ac = A * C;
-			ll bc = B * C;
-			ll mn = min({ ab,ac,bc });
-			if (ab < ac && ab < bc) {
-				C--; continue;
+
+		ll total = 0;
+		for (auto& i : v) total += i;
+		if (total - 2 <= D) {
+			cout << 0; continue;
+		}
+
+		while (D && v[2] > 0) {
+			if (v[0] != v[1]) {
+				ll gap = min(D, v[0] - v[1]);
+				D -= gap; v[0] -= gap;
 			}
-			else if (ac < ab && ac < bc) {
-				B--; continue;
-			}
-			else if (bc < ac && bc < ab) {
-				A--; continue;
+			else if (v[1] != v[2]) {
+				ll gap = min(D, 2 * (v[1] - v[2]));
+				D -= gap;
+				v[0] -= gap / 2;
+				v[1] -= gap / 2 + (gap & 1);
 			}
 			else {
-				if (ab == mn) C--;
-				else if (ac == mn) B--;
-				else A--;
+				ll gap = min(D, v[0] * 3 - 2);
+				D -= gap;
+				ll gap_rest = gap % 3;
+				v[0] -= gap / 3;
+				v[2] -= gap / 3;
+				if (gap_rest) v[2]--, gap_rest--;
+				v[1] -= gap / 3;
+				if (gap_rest) v[1]--, gap_rest--;
 			}
 		}
-		cout << A * B * C << endl;
+		if (v[2] == 0) {
+			cout << 0 << endl; continue;
+		}
+		ll res = 1;
+		for (ll n : v) res *= n;
+		cout << res << endl;
 	}
 
 }
