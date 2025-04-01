@@ -26,12 +26,7 @@ int main() {
 	int T; cin >> T;
 	while (T--) {
 		string s; cin >> s;
-		int res = 0;
-		for (char c : s) {
-			res <<= 1;
-			if (c == '1') res |= 1;
-		}
-		cout << res << endl;
+		cout << stoi(s, nullptr, 2) << endl;
 	}
 
 }
