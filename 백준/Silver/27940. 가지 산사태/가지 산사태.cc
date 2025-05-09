@@ -24,51 +24,15 @@ int main() {
 
 	int N, M, K; cin >> N >> M >> K;
 
-	vector<pii> queries;
+	int now = 0;
 	FOR(i, 0, M) {
 		int a, b; cin >> a >> b;
-		queries.push_back({ a,b });
-	}
-
-	auto build = [&](int m) -> vector<int> {
-		vector<int> v(N + 2);
-		for (int i = 0; i <= m; i++) {
-			auto [a, b] = queries[i];
-			v[1] += b; v[a + 1] -= b;
-		}
-		FOR(i, 1, v.size()) {
-			v[i] += v[i - 1];
-		}
-		return v;
-	};
-
-	int l = 0, r = M - 1;
-	while (l <= r) {
-		int m = l + r >> 1;
-		auto v = build(m);
-		bool fall = false;
-		for (auto& i : v) {
-			if (i > K) {
-				fall = true; break;
-			}
-		}
-		if (fall) r = m - 1;
-		else l = m + 1;
-	}
-
-	if (l < M) {
-		cout << l + 1 << ' ';
-
-		auto v = build(l);
-		FOR(i, 0, v.size()) {
-			if (v[i] > K) {
-				cout << i; break;
-			}
+		now += b;
+		if (now > K) {
+			cout << i + 1 << ' ' << 1; exit(0);
 		}
 	}
-	else {
-		cout << -1;
-	}
+	cout << -1;
 
 }
 
