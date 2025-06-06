@@ -24,9 +24,9 @@ int main() {
 
 	int T; cin >> T;
 	while (T--) {
-		int N; cin >> N;
+		ll N; cin >> N;
 
-		int res = 0;
+		ll res = 0;
 		res += N; // (1,1), (2,2), ... (N,N)
 		res += N/2*2; // {(1,2), (2,4), ... (N/2, N/2*2)} * 2
 
