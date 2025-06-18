@@ -21,15 +21,7 @@ using ii = pair<int, int>;
 int board[111][111];
 int R, C;
 
-void sort_row() {
-	int next_col_size = -1;
-	FOR(i, 0, R) {
-		vector<int> v;
-		FOR(j, 0, C) {
-			int now = board[i][j];
-			if (now == 0) continue;
-			v.push_back(now);
-		}
+vector<int> custom_sort(const vector<int>&v) {
 
 		map<int, int> cnt;
 		for (auto& i : v) {
@@ -42,12 +34,28 @@ void sort_row() {
 		}
 		sort(all(w)); // count, number pair
 
-		vector<int> row;
+		vector<int> res;
 		for (auto& p : w) {
-			row.push_back(p.second);
-			row.push_back(p.first);
+			res.push_back(p.second);
+			res.push_back(p.first);
 		}
-		if (row.size() > 100) row.resize(100);
+		if (res.size() > 100) res.resize(100);
+
+		return res;
+
+}
+
+void sort_row() {
+	int next_col_size = -1;
+	FOR(i, 0, R) {
+		vector<int> v;
+		FOR(j, 0, C) {
+			int now = board[i][j];
+			if (now == 0) continue;
+			v.push_back(now);
+		}
+
+		vector<int> row = custom_sort(v);
 		
 		FOR(j, 0, row.size()) {
 			board[i][j] = row[j];
@@ -71,23 +79,7 @@ void sort_col() {
 			v.push_back(now);
 		}
 
-		map<int, int> cnt;
-		for (auto& i : v) {
-			cnt[i]++;
-		}
-
-		vector<pii> w;
-		for (auto& p : cnt) {
-			w.push_back({ p.second, p.first });
-		}
-		sort(all(w)); // count, number pair
-
-		vector<int> col;
-		for (auto& p : w) {
-			col.push_back(p.second);
-			col.push_back(p.first);
-		}
-		if (col.size() > 100) col.resize(100);
+		vector<int> col = custom_sort(v);
 
 		FOR(j, 0, col.size()) {
 			board[j][i] = col[j];
