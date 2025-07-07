@@ -20,7 +20,6 @@ using ii = pair<int, int>;
 
 
 
-int idx[333];
 
 int main() {
 	cin.tie(0)->sync_with_stdio(0);
@@ -32,27 +31,18 @@ int main() {
 	FOR(i, 0, N) {
 		int n; cin >> n;
 		v[i] = n;
-		idx[n] = i;
 	}
 
 	int Q; cin >> Q;
 	while (Q--) {
 		int a, b; cin >> a >> b;
 
-		vector<int> w;
-		FOR(i, a, b + 1) {
-			w.push_back(idx[i]);
-		}
-
-		sort(all(w));
-		vector<int> vv = v;
 		int now = a;
-		for (auto& i : w) {
-			vv[i] = now;
-			now++;
+		for (auto& i : v) {
+			if (i < a || b < i) cout << i;
+			else cout << now++;
+			cout << ' ';
 		}
-
-		for (auto& i : vv) cout << i << ' ';
 		cout << endl;
 
 	}
