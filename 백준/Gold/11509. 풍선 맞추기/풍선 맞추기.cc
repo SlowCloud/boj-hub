@@ -22,18 +22,15 @@ int main() {
 
 	int N; cin >> N;
 
-	vector<int> v;
-	FOR(i, 0, N) {
-		int n; cin >> n;
-		v.push_back(n);
-	}
+	vector<int> v(N);
+	for (auto& i : v) cin >> i;
 
 	int res = 0;
 	for (const int& i : v) {
 		if (arrows[i] == 0) {
-			res++; arrows[i] = 1;
+			++res; arrows[i] = 1;
 		}
-		arrows[i]--; arrows[i - 1]++;
+		--arrows[i]; ++arrows[i - 1];
 	}
 
 	cout << res;
