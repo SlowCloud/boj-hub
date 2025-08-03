@@ -1,7 +1,5 @@
 -- 코드를 작성해주세요
 
-select * from (
-
 with info as (
     select *
     from skillcodes a
@@ -21,7 +19,5 @@ select (
     end
 ) as grade, id, email
 from developers
+having grade is not null
 order by grade, id asc
-    
-) result
-where grade is not null
