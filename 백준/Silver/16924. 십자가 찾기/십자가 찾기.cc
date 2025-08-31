@@ -17,6 +17,7 @@ using pii = pair<int, int>;
 
 
 char board[111][111];
+bool dp[111][111][111];
 int vst[111][111];
 int R, C;
 
@@ -52,14 +53,20 @@ int main() {
 		}
 	}
 
+	FOR(i, 0, R) {
+		FOR(j, 0, C) {
+			dp[i][j][0] = 1;
+		}
+	}
+
 	vector<tuple<int, int, int>> res;
 	FOR(i, 1, R - 1) {
 		FOR(j, 1, C - 1) {
-			FOR(k, 1, min(R, C)) {
+			for (int k = min(R, C); k > 0; k--) {
 				if (check(i, j, k)) {
 					res.push_back({ i,j,k });
+					break;
 				}
-				else break;
 			}
 		}
 	}
