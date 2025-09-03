@@ -27,36 +27,28 @@ int main() {
 	FOR(i, 0, N) {
 		FOR(j, 0, N) {
 			cin >> board[i][j];
+			vst[i][j] = 2e9;
 		}
 	}
 
 #define out(x,y) (min(x,y) < 0 || max(x,y) >= N)
 
-	int l = 0, r = 1e9, m;
-	while (l <= r) {
-		m = l + r >> 1;
-		queue<pii> q; q.push({ 0,0 });
-		memset(vst, 0, sizeof vst);
-		vst[0][0] = 1;
+	priority_queue<tuple<int, int, int>> q; q.push({ 0,0,0 });
+	vst[0][0] = 0;
 
-		while (q.size()) {
-			const auto [x, y] = q.front(); q.pop();
-			FOR(i, 0, 4) {
-				const int nx = x + "1102"[i] - '1';
-				const int ny = y + "0211"[i] - '1';
-				if (out(nx, ny)) continue;
-				if (vst[nx][ny]) continue;
-				if (abs(board[nx][ny] - board[x][y]) > m) continue;
-				vst[nx][ny] = 1;
-				q.push({ nx,ny });
-			}
-			if (vst[N - 1][N - 1]) break;
+	while (q.size()) {
+		const auto [_, x, y] = q.top(); q.pop();
+		FOR(i, 0, 4) {
+			const int nx = x + "1102"[i] - '1';
+			const int ny = y + "0211"[i] - '1';
+			if (out(nx, ny)) continue;
+			const int tmp = max(vst[x][y], abs(board[nx][ny] - board[x][y]));
+			if (tmp >= vst[nx][ny]) continue;
+			vst[nx][ny] = tmp;
+			q.push({ -tmp,nx,ny });
 		}
-
-		if (vst[N - 1][N - 1]) r = m - 1;
-		else l = m + 1;
 	}
 
-	cout << l;
+	cout << vst[N - 1][N - 1];
 
 }
