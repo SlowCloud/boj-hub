@@ -24,16 +24,14 @@ int main() {
 
 	vector<int> v(N);
 	for (auto& i : v) cin >> i;
-	sort(all(v));
 
-	int small = v[0];
-	for (auto& i : v) i -= small;
+	const int small = *min_element(all(v));
 
 	int cnt = 0;
 	int res = 0;
 	for (const auto& i : v) {
-		cnt += i != 0;
-		res += i;
+		cnt += i != small;
+		res += i - small;
 	}
 
 	cout << res << ' ' << cnt;
