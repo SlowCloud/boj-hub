@@ -16,7 +16,7 @@ using pii = pair<int, int>;
 #define rall(v) v.rbegin(), v.rend()
 
 
-set<int> G[555];
+int G[555][555];
 int vst[555];
 
 int N, M;
@@ -28,13 +28,12 @@ void bfs() {
 	queue<int> q; q.push(1);
 
 	while (q.size()) {
-		for (int _ = q.size(); _--;) {
-			int now = q.front(); q.pop();
-			for(const int& next : G[now]) {
-				if (vst[next] != -1) continue;
-				vst[next] = vst[now] + 1;
-				q.push(next);
-			}
+		int now = q.front(); q.pop();
+		FOR(next, 1, N + 1) {
+			if (G[now][next] == 0) continue;
+			if (vst[next] != -1) continue;
+			vst[next] = vst[now] + 1;
+			q.push(next);
 		}
 	}
 
@@ -49,20 +48,17 @@ int main() {
 
 	FOR(_, 0, M) {
 		int a, b; cin >> a >> b;
-		G[a].insert(b);
-		G[b].insert(a);
+		G[a][b] = G[b][a] = 1;
 	}
 
 	int q; cin >> q;
 	FOR(_, 0, q) {
 		int a, i, j; cin >> a >> i >> j;
 		if (a == 2) {
-			G[i].erase(j);
-			G[j].erase(i);
+			G[i][j] = G[j][i] = 0;
 		}
 		else {
-			G[i].insert(j);
-			G[j].insert(i);
+			G[i][j] = G[j][i] = 1;
 		}
 		bfs();
 	}
