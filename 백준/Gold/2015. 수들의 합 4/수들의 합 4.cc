@@ -18,7 +18,7 @@ using pii = pair<int, int>;
 
 ll dp[222'222];
 
-map<ll, vector<int>> pos;
+map<ll, int> pos;
 
 int main() {
 	cin.tie(0)->sync_with_stdio(0);
@@ -32,10 +32,10 @@ int main() {
 	FOR(i, 1, N + 1) {
 		const auto& now = dp[i];
 		if (pos.find(now - K) != pos.end()) {
-			res += pos[now - K].size();
+			res += pos[now - K];
 		}
 		if (now == K) res++;
-		pos[now].push_back(i);
+		pos[now]++;
 	}
 
 	cout << res;
