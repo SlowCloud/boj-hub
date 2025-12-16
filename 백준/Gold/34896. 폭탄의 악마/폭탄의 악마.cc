@@ -24,44 +24,6 @@ struct Bomb {
 };
 
 vector<Bomb> bombs;
-int vst[222'222];
-
-inline bool out(const int x) {
-	return x < 0 || bombs.size() <= x;
-}
-
-vector<Bomb> bfs(const int s, const int R) {
-
-	vector<Bomb> visited_bombs;
-
-	queue<int> q; q.push(s);
-	visited_bombs.push_back(bombs[s]);
-	vst[s] = 1;
-	while (q.size()) {
-		const auto now = q.front(); q.pop();
-		for (int next : {now - 1, now + 1}) {
-			if (out(next)) continue;
-			if (vst[next]) continue;
-			int gap = abs(bombs[now].position - bombs[next].position);
-			if (gap > R) continue;
-			visited_bombs.push_back(bombs[next]);
-			vst[next] = 1;
-			q.push(next);
-		}
-	}
-
-	return visited_bombs;
-}
-
-ll get_smallest_price(const vector<Bomb>& g) {
-
-	ll res = 1e18;
-	for (const auto& b : g) {
-		res = min(res, b.price);
-	}
-	return res;
-
-}
 
 int main() {
 	cin.tie(0)->sync_with_stdio(0);
@@ -88,14 +50,18 @@ int main() {
 	while (l <= r) {
 		m = l + r >> 1;
 
-		vector<vector<Bomb>> bombs_group;
-		memset(vst, 0, sizeof vst);
-		FOR(i,0,N) {
-			if(!vst[i]) bombs_group.push_back(bfs(i, m));
-		}
-
 		ll price = 0;
-		for (const auto& g : bombs_group) price += get_smallest_price(g);
+		ll now = 1e18;
+		FOR(i, 0, N) {
+			if (i) {
+				if (bombs[i].position - bombs[i - 1].position > m) {
+					price += now;
+					now = 1e18;
+				}
+			}
+			now = min(now, bombs[i].price);
+		}
+		price += now;
 
 		if (price > B) l = m + 1;
 		else r = m - 1;
