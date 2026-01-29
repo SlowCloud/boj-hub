@@ -139,7 +139,6 @@ public:
 
 struct Node {
 	string parent;
-	vector<string> children;
 	int fileCount = 0;
 	set<string> filekinds;
 };
@@ -155,13 +154,11 @@ int main() {
 		string a, b; cin >> a >> b;
 		int n; cin >> n; // 1 or 0
 		if (n == 1) { // folder
-			graph[a].children.push_back(b);
 			graph[b].parent = a;
-			int cnt = graph[b].fileCount;
+			string target = b;
 			while (a != "") {
-				graph[a].filekinds.insert(ALL(graph[b].filekinds));
-				graph[a].fileCount += cnt;
-				b = a;
+				graph[a].filekinds.insert(ALL(graph[target].filekinds));
+				graph[a].fileCount += graph[target].fileCount;
 				a = graph[a].parent;
 			}
 		}
