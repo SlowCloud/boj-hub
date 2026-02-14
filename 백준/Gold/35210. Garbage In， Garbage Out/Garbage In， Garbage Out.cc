@@ -292,6 +292,7 @@ int dp[333'333];
 bool cmp(const string& now, int from, const string& target) {
 	if (now.size() < from + target.size()) return false;
 	if (now[from] != target[0]) return false;
+	if (now[from + 1] != target[1]) return false;
 	if (now[from + target.size() - 1] != target.back()) return false;
 
 	FOR(i, 0, target.size()) {
