@@ -183,7 +183,7 @@ int N, K;
 
 // O(log(sqrt(N))
 void add(int idx) {
-	ll now = (m[idx] + global[idx / sq]) % K;
+	ll now = m[idx] % K;
 	bucket[idx / sq][now]--;
 	if (bucket[idx / sq][now] == 0) {
 		bucket[idx / sq].erase(now);
@@ -193,15 +193,9 @@ void add(int idx) {
 	bucket[idx / sq][now]++;
 }
 
-// O(sqrt(N)log(sqrt(N))
+// O(1)
 void add_bucket(int bucket_idx) {
 	global[bucket_idx]++;
-	vector<pll> v(ALL(bucket[bucket_idx]));
-	bucket[bucket_idx].clear();
-	for (auto [val, cnt] : v) {
-		val = (val + 1) % K;
-		bucket[bucket_idx][val] = cnt;
-	}
 }
 
 int main() {
@@ -246,7 +240,7 @@ int main() {
 			}
 			while (s + sq <= e + 1) {
 				for (const auto& p : bucket[s / sq]) {
-					res += p.first * p.second;
+					res += (p.first + global[s / sq]) % K * p.second;
 				}
 				s += sq;
 			}
