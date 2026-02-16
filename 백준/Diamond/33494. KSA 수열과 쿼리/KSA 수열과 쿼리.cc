@@ -183,7 +183,7 @@ int N, K;
 
 // O(log(sqrt(N))
 void add(int idx) {
-	int now = m[idx] + global[idx / sq];
+	ll now = (m[idx] + global[idx / sq]) % K;
 	bucket[idx / sq][now]--;
 	if (bucket[idx / sq][now] == 0) {
 		bucket[idx / sq].erase(now);
@@ -210,10 +210,9 @@ int main() {
 	cin >> N >> K;
 
 	FOR(i, 0, N) {
-		int n; cin >> n;
-		n %= K;
+		ll n; cin >> n;
 		m[i] = n;
-		bucket[i / sq][n]++;
+		bucket[i / sq][n % K]++;
 	}
 
 	int Q; cin >> Q;
