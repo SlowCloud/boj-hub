@@ -1,4 +1,4 @@
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O2")
 
 // gcc things
 // #include <ext/rope>
@@ -71,9 +71,12 @@ template <typename T>
 
 
 vector<int> idx[4];
+ll dp[4][111'111];
+
 
 int main() {
 	cin.tie(0)->sync_with_stdio(0);
+
 
 	int N; cin >> N;
 
@@ -87,18 +90,40 @@ int main() {
 		if (c == 'H') idx[3].push_back(i);
 	}
 
-	ll res = 0;
-	FOR(i, 0, idx[0].size()) {
-		int j = upper_bound(ALL(idx[1]), idx[0][i]) - idx[1].begin();
-		for (;j < idx[1].size();j++) {
-			int k = upper_bound(ALL(idx[2]), idx[1][j]) - idx[2].begin();
-			for (;k < idx[2].size();k++) {
-				int l = upper_bound(ALL(idx[3]), idx[2][k]) - idx[3].begin();
-				res += idx[3].size() - l;
-			}
-		}
+	// DKSH
+
+	// H
+	for (auto i = idx[3].rbegin(); i != idx[3].rend();i++) {
+		dp[3][*i] = 1;
+	}
+	for (int i = 100'000;i >= 0;i--) {
+		dp[3][i] += dp[3][i + 1];
 	}
 
-	cout << res;
+	// S
+	for (auto i = idx[2].rbegin(); i != idx[2].rend();i++) {
+		dp[2][*i] = dp[3][*i + 1];
+	}
+	for (int i = 100'000;i >= 0;i--) {
+		dp[2][i] += dp[2][i + 1];
+	}
+
+	// K
+	for (auto i = idx[1].rbegin(); i != idx[1].rend();i++) {
+		dp[1][*i] = dp[2][*i + 1];
+	}
+	for (int i = 100'000;i >= 0;i--) {
+		dp[1][i] += dp[1][i + 1];
+	}
+
+	// D
+	for (auto i = idx[0].rbegin(); i != idx[0].rend();i++) {
+		dp[0][*i] = dp[1][*i + 1];
+	}
+	for (int i = 100'000;i >= 0;i--) {
+		dp[0][i] += dp[0][i + 1];
+	}
+
+	cout << dp[0][0];
 
 }
