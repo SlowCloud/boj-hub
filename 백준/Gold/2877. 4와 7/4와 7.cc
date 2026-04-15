@@ -1,3 +1,2 @@
 #include <bits/stdc++.h>
-using namespace std;
-int main(){int N,i;cin>>N;N++;for(i=log2(N)-1;i>=0;i--){cout<<(N&(1<<i)?7:4);}}
+using namespace std;int main(){int N,i;cin>>N;N++;for(i=log2(N);i>0;i--)cout<<(N&(1<<i-1)?7:4);}
