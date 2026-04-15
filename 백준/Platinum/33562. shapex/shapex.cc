@@ -1,249 +1,509 @@
 #pragma GCC optimize("Ofast")
 #pragma GCC optimize("unroll-loops")
 
+// gcc things
+// #include <ext/rope>
+
+#define _USE_MATH_DEFINES
+
 #include <bits/stdc++.h>
 #include <unordered_set>
+#include <regex>
+#include <algorithm>
+#include <ranges>
+#include <chrono>
+#include <random>
 using namespace std;
 
 using ll = long long;
-using ull = unsigned long long;
 using pll = pair<ll, ll>;
 using pii = pair<int, int>;
-using ii = pair<int, int>;
 
-#define FOR(i,a,b) For(i,a,b)
-#define For(i,a,b) for(int i=a;i<b;i++)
-#define foi(i,n) for(int i=0;i<n;i++)
+#define FOR(i,a,b) for(auto i=(a);i<(b);i++)
+#define ALL(v) v.begin(), v.end()
+#define RALL(v) v.rbegin(), v.rend()
 #define endl '\n'
-#define all(v) v.begin(), v.end()
-#define rall(v) v.rbegin(), v.rend()
 
-
-struct Piece {
-	char type = '-';
-	char color = '-';
-	Piece() {}
-	Piece(const string& s) {
-		type = s[0];
-		color = s[1];
+constexpr ll powll(ll n, ll k, ll mod = static_cast<ll>(1e9) + 7) {
+	ll r = 1 % mod;
+	while (k) {
+		if (k & 1) r = (r * n) % mod;
+		n = (n * n) % mod;
+		k >>= 1;
 	}
-	Piece(char t, char c) {
-		type = t; color = c;
-	}
-	string build() {
-		return string(1, type).append(string(1, color));
-	}
-	bool empty() {
-		return type == '-';
-	}
-	Piece coloring(char c) {
-		if (type == '-') return { '-','-' };
-		return { type, c };
-	}
+	return r;
 };
 
-struct Board {
-	vector<Piece> pieces;
-	Board(const string& s) {
-		FOR(i, 0, 4) {
-			pieces.push_back(s.substr(i * 2, 2));
-		}
-	}
-	Board(vector<Piece> p) {
-		pieces = p;
-	}
-	string build() {
-		string res = "";
-		FOR(i, 0, 4) {
-			res.append(pieces[i].build());
-		}
-		return res;
-	}
-	Board left() {
-		vector<Piece> ps = { Piece(), Piece(), pieces[2], pieces[3] };
-		return Board(ps);
-	}
-	Board right() {
-		vector<Piece> ps = { pieces[0], pieces[1], Piece(), Piece() };
-		return Board(ps);
-	}
-	bool empty() {
-		int cnt = 0;
-		for (Piece& p : pieces) cnt += p.empty();
-		return cnt == 4;
-	}
-	Board rotate(int n) {
-		vector<Piece> p;
-		FOR(i, 0, 4) {
-			p.push_back(pieces[(i - n + 4) % 4]);
-		}
-		return Board(p);
-	}
-	Board color(char c) {
-		vector<Piece> ps;
-		for (Piece& piece : pieces) {
-			ps.push_back(piece.coloring(c));
-		}
-		return ps;
+template <typename T>
+constexpr auto OUT(const T R, const T C) {
+	return [&](const T x, const T y) -> bool { return (x < 0 || x >= R || y < 0 || y >= C); };
+}
+
+template <typename ...Args>
+constexpr inline void read(Args&... args) {
+	(std::cin >> ... >> args);
+}
+
+template <typename ...Args>
+constexpr inline void write(Args&& ...args) {
+	(std::cout << ... << args);
+}
+
+
+struct Edge {
+	int to;
+	ll cost;
+	ll cap;
+	int rev;
+
+	Edge(int to, ll cost) : to(to), cost(cost), rev(0), cap(0) {}
+	Edge(int to, ll cost, ll cap, int rev) : to(to), cost(cost), cap(cap), rev(rev) {}
+};
+
+class Graph {
+public:
+	int n;
+	vector<vector<Edge>> adj;
+	Graph(int n) : n(n), adj(n) {}
+
+	void add_edge(int u, int v) {
+		add_edge(u, v, 1ll);
 	}
 
-	// danger!
-	void sum(Board& b) {
-		FOR(i, 0, 4) {
-			if (pieces[i].empty()) {
-				pieces[i] = b.pieces[i];
-				b.pieces[i] = Piece();
+	void add_edge(int u, int v, ll cost) {
+		adj[u].push_back(Edge{ v,cost });
+	}
+
+	vector<ll> dijkstra(const int s) const {
+		vector<ll> d(n, -1);
+		priority_queue<pll, vector<pll>, greater<pll>> pq;
+		pq.push({ 0,s });
+		d[s] = 0;
+		while (pq.size()) {
+			auto [_, now] = pq.top(); pq.pop();
+			for (const auto& next : adj[now]) {
+				if (d[next.to] == -1 || d[next.to] > d[now] + next.cost) {
+					d[next.to] = d[now] + next.cost;
+					pq.push({ d[next.to], next.to });
+				}
+			}
+		}
+		return d;
+	}
+
+};
+
+class MCMF : public Graph {
+private:
+
+	vector<int> p;
+	vector<ll> d;
+	vector<int> Q;
+	vector<int> idx;
+
+
+	void spfa(const int s, const int e) {
+		fill(ALL(Q), 0);
+		fill(ALL(d), INT_MAX);
+		fill(ALL(p), -1);
+		queue<int> q;
+		q.push(s);
+		d[s] = 0;
+		while (q.size()) {
+			int now = q.front(); q.pop();
+			Q[now] = 0;
+			FOR(i, 0, adj[now].size()) {
+				const auto& next = adj[now][i];
+				if (next.cap <= 0) continue;
+				if (d[next.to] > d[now] + next.cost) {
+					d[next.to] = d[now] + next.cost;
+					p[next.to] = now;
+					idx[next.to] = i;
+					if (!Q[next.to]) {
+						Q[next.to] = 1;
+						q.push(next.to);
+					}
+				}
 			}
 		}
 	}
-
-	bool fit(Board& b) {
-		FOR(i, 0, 4) {
-			if (!pieces[i].empty() && !b.pieces[i].empty()) return false;
+	ll flow_once(const int s, const int e) {
+		ll f = LLONG_MAX;
+		for (int now = e; now != s; now = p[now]) {
+			f = min(f, adj[p[now]][idx[now]].cap);
 		}
-		return true;
+		for (int now = e; now != s; now = p[now]) {
+			adj[p[now]][idx[now]].cap -= f;
+			adj[now][adj[p[now]][idx[now]].rev].cap += f;
+		}
+		return f;
+	}
+
+public:
+	MCMF(int n) : Graph(n), p(n), d(n), Q(n), idx(n) {}
+
+	void add_edge(int u, int v, ll cost, ll cap) {
+		adj[u].push_back(Edge{ v,cost,cap,(int)adj[v].size() });
+		adj[v].push_back(Edge{ u,-cost,0,(int)adj[u].size() - 1 });
+	}
+
+	pair<ll, ll> total_flow(const int s, const int e) {
+		ll f = 0;
+		ll c = 0;
+		while (1) {
+			spfa(s, e);
+			if (p[e] == -1) break;
+			ll now = flow_once(s, e);
+			f += now;
+			c += d[e] * now;
+		}
+		return { f, c };
 	}
 };
 
-struct Node {
-	vector<Board> boards;
-	Node() {
+
+
+
+//namespace Treap {
+//	// code from https://github.com/koosaga/olympiad
+//}
+
+
+
+
+
+// editorial & codes from: https://blog.naver.com/jinhan814/222250185888
+
+struct Info { int u, v, state; };
+
+struct UnionFind {
+	vector<int> parent, rank;
+	stack<Info> S;
+	UnionFind(int n) : parent(n), rank(n, 1) {
+		iota(parent.begin(), parent.end(), 0);
 	}
-	Node(const string& s) {
-		stringstream sstream(s);
-		string line;
-		while (getline(sstream, line, ':')) {
-			boards.push_back(Board(line));
+	int Find(int x) {
+		return x == parent[x] ? x : Find(parent[x]);
+	}
+	bool Union(int a, int b) {
+		a = Find(a), b = Find(b);
+		if (a == b) return 0;
+		if (rank[a] < rank[b]) swap(a, b);
+		S.push({ a, b, rank[a] == rank[b] });
+		parent[b] = a;
+		rank[a] += rank[a] == rank[b];
+		return 1;
+	}
+	void rollback(int cnt) {
+		while (cnt--) {
+			const auto [a, b, flag] = S.top(); S.pop();
+			parent[b] = b;
+			rank[a] -= flag;
 		}
 	}
-	Node(vector<Board> b) {
-		boards = b;
+};
+
+struct SegTree {
+	vector <vector<pii>> tree;
+	const int n;
+	SegTree(int n) : tree(n * 4), n(n) {}
+	inline void add(int l, int r, pii info) {
+		if (l > r) return;
+		add(1, 0, n - 1, l, r, info);
 	}
-	string build() {
+	void add(int node, int s, int e, int l, int r, pii info) {
+		if (e < l || r < s) return;
+		if (l <= s && e <= r) {
+			tree[node].push_back(info);
+			return;
+		}
+		int m = s + e >> 1;
+		add(node << 1, s, m, l, r, info);
+		add(node << 1 | 1, m + 1, e, l, r, info);
+	}
+};
+
+void walk(int node, int s, int e, SegTree& seg, vector<pii>& q, UnionFind& uf) {
+	int cnt = 0;
+	for (const auto [a, b] : seg.tree[node]) cnt += uf.Union(a, b);
+	if (s == e) {
+		cout << (uf.Find(q[s].first) == uf.Find(q[s].second)) << endl;
+		uf.rollback(cnt);
+		return;
+	}
+	int m = s + e >> 1;
+	walk(node << 1, s, m, seg, q, uf);
+	walk(node << 1 | 1, m + 1, e, seg, q, uf);
+	uf.rollback(cnt);
+}
+
+inline void walk(SegTree& seg, vector<pii>& q, UnionFind& uf) {
+	walk(1, 0, seg.n - 1, seg, q, uf);
+}
+
+
+
+
+constexpr int LAYER_MAX_SIZE = 4;
+
+struct Layer {
+	vector<string> info;
+
+	Layer() {
+		construct("--------");
+	}
+
+	Layer(string&& s) {
+		construct(move(s));
+	}
+
+	// not allowed to call from outside!
+	void construct(const string&& s) {
+		FOR(i, 0, 4) {
+			info.push_back(s.substr(i * 2, 2));
+		}
+	}
+
+	pair<Layer, Layer> cut() const {
+		Layer l, r;
+
+		l.info[2] = info[2];
+		l.info[3] = info[3];
+
+		r.info[0] = info[0];
+		r.info[1] = info[1];
+
+		return { l,r };
+	}
+
+	Layer rotate(int nth) const {
+		Layer res;
+
+		FOR(i, 0, 4) {
+			int target = (i + nth) % 4;
+			res.info[target] = info[i];
+		}
+
+		return res;
+	}
+
+	bool collide(const Layer& l) const {
+		FOR(i, 0, 4) {
+			if (info[i][0] != '-' && l.info[i][0] != '-') {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	Layer combine(const Layer& l) const {
+		Layer res;
+		FOR(i, 0, 4) {
+			if (info[i][0] != '-') {
+				res.info[i] = info[i];
+			}
+			else {
+				res.info[i] = l.info[i];
+			}
+		}
+		return res;
+	}
+
+	Layer color(char c) const {
+		Layer res = *this;
+		for (auto& i : res.info) {
+			if(i[0] != '-') i[1] = c;
+		}
+		return res;
+	}
+
+	bool empty() {
+		FOR(i, 0, 4) {
+			if (info[i][0] != '-') return false;
+		}
+		return true;
+	}
+
+	string to_string() {
+		string res;
+		for (const auto& i : info) {
+			res += i;
+		}
+		return res;
+	}
+};
+
+struct Shape {
+	deque<Layer> layers;
+
+	Shape(string&& s) {
+		construct(move(s));
+	}
+
+	Shape(): layers(0) {
+	}
+
+	// now allowed to call from outside!
+	void construct(const string&& s) {
+		for (int i = 0;i < s.size();i += 9) {
+			string now = s.substr(i, 8);
+			layers.push_back(Layer(move(now)));
+		}
+	}
+
+	pair<Shape, Shape> cut() const {
+		if (empty()) return { Shape(), Shape() };
+		Shape l, r;
+		for (const auto& layer : layers) {
+			auto [ll, rr] = layer.cut();
+			if(!ll.empty()) l.layers.push_back(ll);
+			if(!rr.empty()) r.layers.push_back(rr);
+		}
+		return { l,r };
+	}
+
+	Shape rotate(int nth) {
+		if (empty()) return Shape();
+		Shape res;
+		res.layers.clear();
+		for (const auto& layer : layers) {
+			res.layers.push_back(layer.rotate(nth));
+		}
+		return res;
+	}
+
+	bool collide(const Shape& s, const int moves) const {
+		if (layers.size() <= LAYER_MAX_SIZE - moves) return false;
+		FOR(i, 0, LAYER_MAX_SIZE) {
+			if (s.layers.size() <= i) break;
+			int target_idx = LAYER_MAX_SIZE - moves + i;
+			if (layers.size() <= target_idx) break;
+			if (layers[target_idx].collide(s.layers[i])) return true;
+		}
+		return false;
+	}
+
+	Shape combine(const Shape& shape) {
+		if (empty() || shape.empty()) return Shape();
+
+		Shape res = *this;
+
+		int moves = 0;
+		FOR(i, 1, LAYER_MAX_SIZE + 1) {
+			if (!res.collide(shape, i)) {
+				moves = i;
+			}
+			else {
+				break;
+			}
+		}
+
+		FOR(i, 0, LAYER_MAX_SIZE) {
+			if (shape.layers.size() <= i) break;
+			int target_idx = LAYER_MAX_SIZE - moves + i;
+			if (res.layers.size() <= target_idx) {
+				res.layers.push_back(shape.layers[i]);
+			}
+			else {
+				res.layers[target_idx] =
+					res.layers[target_idx].combine(shape.layers[i]);
+			}
+		}
+
+		while (res.layers.size() > LAYER_MAX_SIZE) {
+			res.layers.pop_back();
+		}
+
+		return res;
+	}
+
+	Shape color(char c) {
+		if (empty()) return Shape();
+		Shape res;
+		for (const auto& layer : layers) {
+			res.layers.push_back(layer.color(c));
+		}
+		return res;
+	}
+
+	bool empty() const {
+		return layers.empty();
+	}
+
+	string to_string() {
 		if (empty()) {
 			return "None";
 		}
-		string res = "";
-		for (Board& b : boards) {
-			res.append(b.build()).append(":");
+		string res;
+		for (Layer& layer : layers) {
+			res += layer.to_string();
+			res.push_back(':');
 		}
 		res.pop_back();
 		return res;
 	}
-	vector<Node> slice() {
-		vector<Board> l, r;
-		for (Board& b : boards) {
-			auto ltmp = b.left();
-			if (!ltmp.empty()) l.push_back(ltmp);
-
-			auto rtmp = b.right();
-			if (!rtmp.empty()) r.push_back(rtmp);
-		}
-		Node a(l), b(r);
-		return { a,b };
-	}
-	Node rotate(int n) {
-		vector<Board> tmp;
-		for (Board& b : boards) {
-			tmp.push_back(b.rotate(n));
-		}
-		return Node(tmp);
-	}
-	Node sum(Node n) {
-		vector<Board> bs = boards;
-		vector<Board> nbs = n.boards;
-
-		// 여기 버그 분명 있을 것 같은데
-
-		// 겹칠 칸 개수
-		int idx = 0;
-		while (true) {
-			bool check = true;
-			// 켭칠 칸을 하나 더 늘렸을 때 알맞게 들어가는지 확인
-			FOR(i, 0, nbs.size()) {
-				if (-idx - 1 + i >= 0) break;
-				if (!bs.at(bs.size() - idx - 1 + i).fit(nbs[i])) {
-					check = false; break;
-				}
-			}
-			// 가능하다면 한칸 더 늘림
-			if (check) idx++;
-			else break;
-			// 모든 칸이 겹치면 여기서 멈춤
-			if (idx >= bs.size()) break;
-		}
-		// idx가 nbs보다 커질 수 있음. 여기서 터진듯
-		FOR(i, 0, min(idx, (int)nbs.size())) {
-			bs.at(bs.size() - idx + i).sum(nbs[i]);
-		}
-		FOR(i, idx, nbs.size()) {
-			bs.push_back(nbs[i]);
-		}
-		while (bs.size() > 4) {
-			bs.pop_back();
-		}
-		return Node(bs);
-	}
-	Node color(char c) {
-		vector<Board> bs;
-		for (auto& b : boards) {
-			bs.push_back(b.color(c));
-		}
-		return Node(bs);
-	}
-	bool empty() {
-		return boards.empty();
-	}
 };
+
+
+vector<Shape> shapes(111);
+
+
+void combine_test(Shape& l, Shape& r) {
+	auto res = l.combine(r);
+	cout << l.to_string() << " + " << r.to_string() << " = " << res.to_string() << endl;
+}
+
+vector<pair<string, string>> combine_test_sets = {
+	{"CuCu----", "----RuRu"},
+	{"CuCu----", "--RuRu--"},
+	{"Ru----Ru:Ru----Ru:RuRuRuRu", "--CuCu--:--CuCu--"},
+	{"RuRuRuRu:RuRuRuRu:RuRu----:RuRu----", "----CuCu:CuCuCuCu:CuCuCuCu"},
+};
+
+void combine_tests() {
+	for (auto [l, r] : combine_test_sets) {
+		Shape ll(move(l)), rr(move(r));
+		combine_test(ll, rr);
+	}
+}
 
 int main() {
 	cin.tie(0)->sync_with_stdio(0);
 
-	int N, M; cin >> N >> M;
 
-	vector<Node> nodes(101);
-
+	int N, M; cin >>N>>M;
 	FOR(i, 1, N + 1) {
 		string s; cin >> s;
-		nodes[i] = Node(s);
+		shapes[i] = Shape(move(s));
 	}
 
-	while (M--) {
+	FOR(_,0,M) {
 		int op; cin >> op;
+
 		if (op == 1) {
-			int i, j, k; cin >> i >> j >> k;
-			if (nodes[i].empty()) {
-				nodes[j] = nodes[k] = Node();
-				continue;
-			}
-			vector<Node> sliced = nodes[i].slice();
-			nodes[j] = sliced[0];
-			nodes[k] = sliced[1];
+			int i, j, k;
+			read(i, j, k);
+			const auto [l, r] = shapes[i].cut();
+			shapes[j] = l;
+			shapes[k] = r;
 		}
-		else if (op == 2) {
-			int i, j, k; cin >> i >> j >> k;
-			if (nodes[i].empty()) {
-				nodes[j] = Node(); continue;
-			}
-			nodes[j] = nodes[i].rotate(k);
+		if (op == 2) {
+			int i, j, k;
+			read(i, j, k);
+			shapes[j] = shapes[i].rotate(k);
 		}
-		else if(op == 3) {
-			int i, j, k; cin >> i >> j >> k;
-			if (nodes[i].empty() || nodes[j].empty()) {
-				nodes[k] = Node(); continue;
-			}
-			nodes[k] = nodes[i].sum(nodes[j]);
+		if (op == 3) {
+			int i, j, k;
+			read(i, j, k);
+			shapes[k] = shapes[i].combine(shapes[j]);
 		}
-		else {
-			int i, j; char k; cin >> i >> j >> k;
-			if (nodes[i].empty()) {
-				nodes[j] = Node(); continue;
-			}
-			nodes[j] = nodes[i].color(k);
+		if (op == 4) {
+			int i, j; char k;
+			read(i, j, k);
+			shapes[j] = shapes[i].color(k);
 		}
 	}
 
-	cout << nodes[100].build();
+	cout << shapes[100].to_string();
 
 }
-

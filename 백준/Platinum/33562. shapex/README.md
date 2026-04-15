@@ -4,7 +4,7 @@
 
 ### 성능 요약
 
-메모리: 2244 KB, 시간: 12 ms
+메모리: 2248 KB, 시간: 12 ms
 
 ### 분류
 
@@ -12,7 +12,7 @@
 
 ### 제출 일자
 
-2025년 3월 2일 16:39:55
+2026년 2월 27일 21:33:29
 
 ### 문제 설명
 
@@ -20,7 +20,7 @@
 
 <p>도형들과 그 도형들에 대한 조작이 주어졌을 때 만들어지는 도형을 구하는 프로그램을 작성해 보자.</p>
 
-<p style="text-align: center;"><img alt="" src="https://upload.acmicpc.net/30207acd-8681-4122-a573-b5166dd78e35/-/preview/" style="width: 150px; height: 150px; max-width: 100%;"><img alt="" src="https://upload.acmicpc.net/f1b4a2d7-ec7a-459a-a7b6-48b9569bd73a/-/preview/" style="width: 150px; height: 150px; max-width: 100%;"><img alt="" src="https://upload.acmicpc.net/f20edcc7-0423-46db-a7b1-173e61b96029/-/preview/" style="width: 150px; height: 150px; max-width: 100%;"><img alt="" src="https://upload.acmicpc.net/040a28c0-db5d-4bba-8880-7636f2bed1e7/-/preview/" style="width: 150px; height: 150px; max-width: 100%;"></p>
+<p style="text-align: center;"><img alt="" src="" style="width: 150px; height: 150px; max-width: 100%;"><img alt="" src="" style="width: 150px; height: 150px; max-width: 100%;"><img alt="" src="" style="width: 150px; height: 150px; max-width: 100%;"><img alt="" src="" style="width: 150px; height: 150px; max-width: 100%;"></p>
 
 <p>shapex에서는 도형을 쉽게 나타내기 위해 도형 코드를 사용한다. 다음은 도형 코드에 대한 설명이다.</p>
 
@@ -30,10 +30,10 @@
 	<ul>
 		<li>기본 도형은 총 네 가지로 종류와 코드는 다음과 같다.
 		<ul>
-			<li>원형(<img alt="" src="https://upload.acmicpc.net/f5108496-562c-4b2c-b176-127de5a60cfc/-/preview/" style="height: 22px; width: 22px;">, Circle): <code>C</code></li>
-			<li>사각형(<img alt="" src="https://upload.acmicpc.net/90659ce7-561a-477b-a593-fd0548b716a3/-/preview/" style="height: 22px; width: 22px;">, Rectangle): <code>R</code></li>
-			<li>풍차(<img alt="" src="https://upload.acmicpc.net/134fe5c9-bdda-4c5a-8120-86f57a31156e/-/preview/" style="height: 22px; width: 22px;">, Windmill): <code>W</code></li>
-			<li>별(<img alt="" src="https://upload.acmicpc.net/d4105358-4f7c-4777-938b-c44a01a29c09/-/preview/" style="height: 22px; width: 22px;">, Star): <code>S</code></li>
+			<li>원형(<img alt="" src="" style="height: 22px; width: 22px;">, Circle): <code>C</code></li>
+			<li>사각형(<img alt="" src="" style="height: 22px; width: 22px;">, Rectangle): <code>R</code></li>
+			<li>풍차(<img alt="" src="" style="height: 22px; width: 22px;">, Windmill): <code>W</code></li>
+			<li>별(<img alt="" src="" style="height: 22px; width: 22px;">, Star): <code>S</code></li>
 		</ul>
 		</li>
 	</ul>
@@ -42,14 +42,14 @@
 	<ul>
 		<li>색상은 총 여덟 가지로 종류와 코드는 다음과 같다.
 		<ul>
-			<li>빨강(<img alt="" src="https://upload.acmicpc.net/85a8ca4f-888a-4c5f-8e06-328919232c1a/-/preview/" style="height: 13px; width: 13px;">, Red): <code>r</code></li>
-			<li>초록(<img alt="" src="https://upload.acmicpc.net/d01e0932-c7db-4990-8680-a3e7904fa108/-/preview/" style="height: 13px; width: 13px;">, Green): <code>g</code></li>
-			<li>파랑(<img alt="" src="https://upload.acmicpc.net/72344ab5-c92d-4e2f-bb29-97e4bd31c2a9/-/preview/" style="height: 13px; width: 13px;">, Blue): <code>b</code></li>
-			<li>노랑(<img alt="" src="https://upload.acmicpc.net/1dc2df88-2aed-4780-90df-b9063291ffc5/-/preview/" style="height: 13px; width: 13px;">, Yellow): <code>y</code></li>
-			<li>보라(<img alt="" src="https://upload.acmicpc.net/a009075e-700f-41c2-86b2-57d688de566a/-/preview/" style="height: 13px; width: 13px;">, Purple): <code>p</code></li>
-			<li>시안(<img alt="" src="https://upload.acmicpc.net/944db7d1-3214-43cd-9eac-82cf50a8692b/-/preview/" style="height: 13px; width: 13px;">, Cyan): <code>c</code></li>
-			<li>색칠되지 않음(<img alt="" src="https://upload.acmicpc.net/e42fe37e-6103-4e75-a7d5-67ff5b7f6c5a/-/preview/" style="height: 13px; width: 13px;">, Uncolored): <code>u</code></li>
-			<li>하양(<img alt="" src="https://upload.acmicpc.net/a25a916b-707e-4f33-a052-6df1634cf49a/-/preview/" style="height: 13px; width: 13px;">, White): <code>w</code></li>
+			<li>빨강(<img alt="" src="" style="height: 13px; width: 13px;">, Red): <code>r</code></li>
+			<li>초록(<img alt="" src="" style="height: 13px; width: 13px;">, Green): <code>g</code></li>
+			<li>파랑(<img alt="" src="" style="height: 13px; width: 13px;">, Blue): <code>b</code></li>
+			<li>노랑(<img alt="" src="" style="height: 13px; width: 13px;">, Yellow): <code>y</code></li>
+			<li>보라(<img alt="" src="" style="height: 13px; width: 13px;">, Purple): <code>p</code></li>
+			<li>시안(<img alt="" src="" style="height: 13px; width: 13px;">, Cyan): <code>c</code></li>
+			<li>색칠되지 않음(<img alt="" src="" style="height: 13px; width: 13px;">, Uncolored): <code>u</code></li>
+			<li>하양(<img alt="" src="" style="height: 13px; width: 13px;">, White): <code>w</code></li>
 		</ul>
 		</li>
 	</ul>
@@ -85,19 +85,19 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td style="text-align: center;"><img alt="" src="https://upload.acmicpc.net/30207acd-8681-4122-a573-b5166dd78e35/-/preview/" style="height: 22px; width: 22px;"></td>
+			<td style="text-align: center;"><img alt="" src="" style="height: 22px; width: 22px;"></td>
 			<td style="text-align: center;"><code>CuCuCuCu</code></td>
 		</tr>
 		<tr>
-			<td style="text-align: center;"><img alt="" src="https://upload.acmicpc.net/f1b4a2d7-ec7a-459a-a7b6-48b9569bd73a/-/preview/" style="height: 22px; width: 22px;"></td>
+			<td style="text-align: center;"><img alt="" src="" style="height: 22px; width: 22px;"></td>
 			<td style="text-align: center;"><code>CbCbCbRb:CwCwCwCw</code></td>
 		</tr>
 		<tr>
-			<td style="text-align: center;"><img alt="" src="https://upload.acmicpc.net/f20edcc7-0423-46db-a7b1-173e61b96029/-/preview/" style="height: 22px; width: 22px;"></td>
+			<td style="text-align: center;"><img alt="" src="" style="height: 22px; width: 22px;"></td>
 			<td style="text-align: center;"><code>RuCw--Cw:----Ru--</code></td>
 		</tr>
 		<tr>
-			<td style="text-align: center;"><img alt="" src="https://upload.acmicpc.net/040a28c0-db5d-4bba-8880-7636f2bed1e7/-/preview/" style="height: 22px; width: 22px;"></td>
+			<td style="text-align: center;"><img alt="" src="" style="height: 22px; width: 22px;"></td>
 			<td style="text-align: center;"><code>CbCuCbCu:Sr------:--CrSrCr:CwCwCwCw</code></td>
 		</tr>
 	</tbody>
